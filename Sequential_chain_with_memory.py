@@ -16,26 +16,19 @@ callbacks=[StreamingStdOutCallbackHandler()]
 # Verbose is required to pass to the callback manager
 llm = GPT4All(model=LOCAL_PATH, backend='llama', callbacks=callbacks, verbose=False)
 
-template = """You are Percival Lowell the founder of Lowell Observatory.
-
-Curiosity: {astronomy information}
-Resopnse from Clyde Tombaugh:"""
-prompt_template = PromptTemplate(input_variables=["astronomy information"], template=template)
-child_chain = LLMChain(llm=llm, prompt=prompt_template)
+template = """Response from Percival Lowell: You are Percival Lowell the founder of Lowell Observatory having a conversation about {astronomy}"""
+prompt_template = PromptTemplate(input_variables=["astronomy"], template=template)
+lowell_chain = LLMChain(llm=llm, prompt=prompt_template)
 
 
 # This is an LLMChain to write a review of a play given a synopsis.
 llm = GPT4All(model=LOCAL_PATH, backend='llama', callbacks=callbacks, verbose=False)
-template = """You are Clyde Tombaugh The discover of Pluto at Lowell Observatory.
-
-Curiosity: {telescope information}
-Response from Percival Lowell:"""
-prompt_template = PromptTemplate(input_variables=["telescope information"], template=template)
-teacher_chain = LLMChain(llm=llm, prompt=prompt_template)
+template = """Resopnse from Clyde Tombaugh: You are Clyde Tombaugh The discover of Pluto at Lowell Observatory talking about {telescopes}"""
+prompt_template = PromptTemplate(input_variables=["telescopes"], template=template)
+clyde_chain = LLMChain(llm=llm, prompt=prompt_template)
 
 # This is the overall chain where we run these two chains in sequence.
-overall_chain = SimpleSequentialChain(chains=[child_chain, teacher_chain], verbose=True)
-
+overall_chain = SimpleSequentialChain(chains=[lowell_chain, clyde_chain], verbose=False)
 
 def tokens(chain, query):
     cb = StreamingStdOutCallbackHandler()
